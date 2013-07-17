@@ -1,5 +1,5 @@
 #!/usr/bin/python
-__author__ = 'datkinson'
+__author__ = 'ajmills, datkinson'
 import sys, getopt
 import httplib2
 import random
