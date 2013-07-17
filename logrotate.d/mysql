@@ -1,0 +1,17 @@
+#
+# mySQL slow log rotation script by
+# place this script in /etc/logrotate.d/ or your appropriate logrotate dir.
+#
+#
+/var/log/mysql-slow.log {
+weekly
+rotate 3
+compress
+missingok
+notifempty
+sharedscripts
+create 660 mysql mysql
+portrotate
+/usr/bin/mysqladmin flush-logs
+endscript
+}
