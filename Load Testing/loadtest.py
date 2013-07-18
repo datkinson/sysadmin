@@ -19,6 +19,7 @@ RESPONSE_401 = 0
 RESPONSE_403 = 0
 RESPONSE_404 = 0
 RESPONSE_500 = 0
+RESPONSE_502 = 0
 
 # Default values
 # How many threads should be running at peak load.
@@ -75,6 +76,7 @@ def threadproc():
     global RESPONSE_403
     global RESPONSE_404
     global RESPONSE_500
+    global RESPONSE_502
 
     """This function is executed by each thread."""
     print "Thread started: %s" % current_thread().getName()
@@ -102,6 +104,8 @@ def threadproc():
                 RESPONSE_404 += 1
             if resp.status == 500:
                 RESPONSE_500 += 1
+            if resp.status == 502:
+                RESPONSE_502 += 1
         except socket.timeout:
             pass
 
@@ -136,5 +140,6 @@ if __name__ == "__main__":
     print "403 response: %d" % RESPONSE_403
     print "404 response: %d" % RESPONSE_404
     print "500 response: %d" % RESPONSE_500
+    print "502 response: %d" % RESPONSE_502
     print "\nTotal requests: %d" % TOTAL
     print "Success rate: %d%%" % percentage(RESPONSE_200,TOTAL)
