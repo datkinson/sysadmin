@@ -6,7 +6,7 @@ import urllib
 from BeautifulSoup import BeautifulSoup, SoupStrainer
 
 http = httplib2.Http()
-URL = 'http://hourd.net'
+URL = 'http://hourd.co.uk'
 status, response = http.request(URL)
 LINKS = {}
 
@@ -20,9 +20,13 @@ def pageLinks(page_url):
 				LINKS[link['href']] = LINKS[link['href']]+1
 			else:
 				LINKS[link['href']] = 1
-# loop through the dict adding new links from the new links
 
-# --- need to add ---
+def printLinks(LIST):
+        # print the dict
+        for key, value in LIST.items():
+                print "%s - %d" % (key, value)
+
+# loop through the dict adding new links from the new links
 pageLinks(URL)
 LIST_LENGTH = len(LINKS)
 TEMP_LIST_LENGTH = 0
@@ -31,6 +35,5 @@ while LIST_LENGTH != TEMP_LIST_LENGTH:
 		pageLinks(key)
 	TEMP_LIST_LENGTH = len(LINKS)
 
-# print the dict
-for key, value in LINKS.items():
-	print "%s - %d" % (key, value)
+printLinks(LINKS)
+
