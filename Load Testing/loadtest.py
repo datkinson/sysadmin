@@ -12,14 +12,7 @@ from urllib import urlencode
 
 # Set up counters
 TOTAL = 0
-RESPONSE_200 = 0
-RESPONSE_301 = 0
-RESPONSE_400 = 0
-RESPONSE_401 = 0
-RESPONSE_403 = 0
-RESPONSE_404 = 0
-RESPONSE_500 = 0
-RESPONSE_502 = 0
+RESPONSES = {}
 
 # Default values
 # How many threads should be running at peak load.
@@ -51,10 +44,10 @@ for o, a in myopts:
             NUM_THREADS = int(a)
     elif o == '-m':
         if a.isdigit():
-            TIME_AT_PEAK_QPS = int(a)
+            TIME_AT_PEAK_QPS = float(a)
     elif o == '-d':
         if a.isdigit():
-            DELAY_BETWEEN_THREAD_START = int(a)
+            DELAY_BETWEEN_THREAD_START = float(a)
     elif o == '-u':
         URL = a
 if not URL:
@@ -69,14 +62,7 @@ def percentage(part, whole):
 
 def threadproc():
     global TOTAL
-    global RESPONSE_200
-    global RESPONSE_301
-    global RESPONSE_400
-    global RESPONSE_401
-    global RESPONSE_403
-    global RESPONSE_404
-    global RESPONSE_500
-    global RESPONSE_502
+    global RESPONSES
 
     """This function is executed by each thread."""
     print "Thread started: %s" % current_thread().getName()
@@ -90,22 +76,10 @@ def threadproc():
             if resp.status != 200:
                 print "Response not OK"
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if resp.status == 200:
-                RESPONSE_200 += 1
-            if resp.status == 301:
-                RESPONSE_301 += 1
-            if resp.status == 400:
-                RESPONSE_400 += 1
-            if resp.status == 401:
-                RESPONSE_401 += 1
-            if resp.status == 403:
-                RESPONSE_403 += 1
-            if resp.status == 404:
-                RESPONSE_404 += 1
-            if resp.status == 500:
-                RESPONSE_500 += 1
-            if resp.status == 502:
-                RESPONSE_502 += 1
+            if resp.status in RESPONSES:
+                RESPONSES[resp.status] = RESPONSES[resp.status]+1
+            else:
+                RESPONSES[resp.status] = 1
         except socket.timeout:
             pass
 
@@ -133,13 +107,7 @@ if __name__ == "__main__":
     for t in threads:
         t.join(1.0)
     print "Finished"
-    print "200 response: %d" % RESPONSE_200
-    print "301 response: %d" % RESPONSE_301
-    print "400 response: %d" % RESPONSE_400
-    print "401 response: %d" % RESPONSE_401
-    print "403 response: %d" % RESPONSE_403
-    print "404 response: %d" % RESPONSE_404
-    print "500 response: %d" % RESPONSE_500
-    print "502 response: %d" % RESPONSE_502
+    for key, value in RESPONSES.items():
+        print "%d response: %d" % (key, value)
     print "\nTotal requests: %d" % TOTAL
-    print "Success rate: %d%%" % percentage(RESPONSE_200,TOTAL)
+    print "Success rate: %d%%" % percentage(RESPONSES.get(200),TOTAL)
